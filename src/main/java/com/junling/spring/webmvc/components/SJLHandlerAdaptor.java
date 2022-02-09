@@ -65,10 +65,7 @@ public class SJLHandlerAdaptor {
                 return (SJLModelAndView) result;
             }
         }
-        catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        catch (InvocationTargetException e) {
+        catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
 
