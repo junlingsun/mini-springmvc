@@ -1,7 +1,6 @@
 package com.junling.spring.webmvc.components;
 
 import com.junling.spring.annotation.SJLRequestedParam;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.annotation.Annotation;

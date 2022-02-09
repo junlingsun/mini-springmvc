@@ -1,6 +1,9 @@
 package com.junling.spring.context;
 
 import com.junling.spring.annotation.SJLAutowire;
+import com.junling.spring.aop.SJLjdkDynamicAopProxy;
+import com.junling.spring.aop.config.SJLAopConfig;
+import com.junling.spring.aop.support.SJLAdvicedSupport;
 import com.junling.spring.bean.SJLBeanWrapper;
 import com.junling.spring.bean.config.SJLBeanDefinition;
 import com.junling.spring.bean.support.SJLPropertyBeanDefinitionReader;
@@ -77,11 +80,20 @@ public class SJLApplicationContext {
         String beanName = sjlBeanDefinition.getBeanName();
         try {
             Class<?> clazz = Class.forName(className);
-
-            //TODO: AOP
-
             Object instance = clazz.getDeclaredConstructor().newInstance();
             factoryBeanObjectCache.put(beanName, instance);
+
+            //AOP implementation
+            SJLAopConfig aopConfig = initAopConfig();
+
+            SJLAdvicedSupport advicedSupport = new SJLAdvicedSupport(aopConfig);
+            advicedSupport.setTargetInstance(instance);
+            advicedSupport.setTargetClass(clazz);
+
+            if (advicedSupport.pointCutMatch()) {
+                SJLjdkDynamicAopProxy proxy = new SJLjdkDynamicAopProxy(advicedSupport);
+                instance = proxy.getProxyObject();
+            }
 
             return instance;
         }
@@ -91,6 +103,20 @@ public class SJLApplicationContext {
 
         return null;
 
+    }
+
+    private SJLAopConfig initAopConfig() {
+        SJLAopConfig aopConfig = new SJLAopConfig();
+        Properties propertyReader = reader.getPropertyReader();
+
+        aopConfig.setPointCut(propertyReader.getProperty("pointCut"));
+        aopConfig.setAspectAfter(propertyReader.getProperty("aspectAfter"));
+        aopConfig.setAspectAfterthrow(propertyReader.getProperty("aspectAfterthrow"));
+        aopConfig.setAspectBefore(propertyReader.getProperty("aspectBefore"));
+        aopConfig.setAspectClass(propertyReader.getProperty("aspectClass"));
+        aopConfig.setAspectAfterThrowingName(propertyReader.getProperty("aspectAfterThrowingName"));
+
+        return aopConfig;
     }
 
 

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public class SJLPropertyBeanDefinitionReader {
+public class SJLPropertyBeanDefinitionReader implements SJLBeanDefinitionReader{
 
     private String contextConfig;
     private Properties properties = new Properties();
@@ -25,7 +25,7 @@ public class SJLPropertyBeanDefinitionReader {
         doScan(properties.getProperty("scan-package")); //TODO: dynamically get properties
     }
 
-
+    @Override
     public List<SJLBeanDefinition> loadBeanDefinitions() {
         List<SJLBeanDefinition> beanDefinitionList = new ArrayList<>();
 
